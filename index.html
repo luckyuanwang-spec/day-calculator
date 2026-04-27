@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日历计算器 - 工作日/日期差/倒计时/节假日</title>
-    <meta name="description" content="免费的在线日历计算器，支持工作日计算、日期差计算、倒计时、2026年美国节假日查询。">
+    <title>Day Calculator - Business Days/Date Difference/Countdown/Holidays</title>
+    <meta name="description" content="Free online day calculator. Calculate business days, date difference, countdown to any date, US holidays 2026.">
     <style>
         * {
             margin: 0;
@@ -125,6 +125,27 @@
         .weekend {
             color: #e74c3c;
         }
+        .lang-toggle {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .lang-toggle button {
+            padding: 8px 16px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 0 4px;
+            font-weight: 600;
+        }
+        .lang-toggle button.active {
+            background: white;
+            color: #667eea;
+        }
+        .lang-toggle button:hover {
+            background: rgba(255,255,255,0.2);
+        }
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.5rem;
@@ -137,82 +158,194 @@
 </head>
 <body>
     <div class="container">
-        <h1>📅 日历计算器</h1>
-        <p class="subtitle">工作日计算 · 日期差计算 · 倒计时 · 美国节假日</p>
+        <!-- 语言切换按钮 -->
+        <div class="lang-toggle">
+            <button id="langEn" onclick="setLanguage('en')">EN</button>
+            <button id="langZh" onclick="setLanguage('zh')">中文</button>
+        </div>
+        
+        <h1 id="mainTitle">📅 Day Calculator</h1>
+        <p class="subtitle" id="mainSubtitle">Business Days · Date Difference · Countdown · US Holidays</p>
         
         <div class="tools-grid">
             <!-- 工作日计算器 -->
             <div class="tool-card">
-                <h2>📅 工作日计算器</h2>
+                <h2 id="workDaysTitle">📅 Business Days Calculator</h2>
                 <div class="input-group">
-                    <label>开始日期</label>
+                    <label id="workDaysStartLabel">Start Date</label>
                     <input type="date" id="workStartDate">
                 </div>
                 <div class="input-group">
-                    <label>结束日期</label>
+                    <label id="workDaysEndLabel">End Date</label>
                     <input type="date" id="workEndDate">
                 </div>
-                <button class="btn" onclick="calculateWorkDays()">计算工作日</button>
-                <div class="result" id="workDayResult">选择日期查看结果</div>
+                <button class="btn" id="workDaysBtn" onclick="calculateWorkDays()">Calculate</button>
+                <div class="result" id="workDayResult">Select dates to calculate</div>
             </div>
 
             <!-- 日期差计算器 -->
             <div class="tool-card">
-                <h2>📆 日期差计算器</h2>
+                <h2 id="dateDiffTitle">📆 Date Difference Calculator</h2>
                 <div class="input-group">
-                    <label>开始日期</label>
+                    <label id="dateDiffStartLabel">Start Date</label>
                     <input type="date" id="diffStartDate">
                 </div>
                 <div class="input-group">
-                    <label>结束日期</label>
+                    <label id="dateDiffEndLabel">End Date</label>
                     <input type="date" id="diffEndDate">
                 </div>
-                <button class="btn" onclick="calculateDateDiff()">计算天数</button>
-                <div class="result" id="dateDiffResult">选择日期查看结果</div>
+                <button class="btn" id="dateDiffBtn" onclick="calculateDateDiff()">Calculate</button>
+                <div class="result" id="dateDiffResult">Select dates to calculate</div>
             </div>
 
             <!-- 倒计时器 -->
             <div class="tool-card">
-                <h2>⏰ 倒计时器</h2>
+                <h2 id="countdownTitle">⏰ Countdown Timer</h2>
                 <div class="input-group">
-                    <label>目标日期</label>
+                    <label id="countdownDateLabel">Target Date</label>
                     <input type="date" id="countdownDate">
                 </div>
                 <div class="input-group">
-                    <label>事件名称（可选）</label>
-                    <input type="text" id="countdownName" placeholder="如：春节、生日、假期...">
+                    <label id="countdownNameLabel">Event Name (optional)</label>
+                    <input type="text" id="countdownName" placeholder="Birthday, Holiday, Anniversary...">
                 </div>
-                <button class="btn" onclick="startCountdown()">开始倒计时</button>
-                <div class="result" id="countdownResult">选择目标日期</div>
+                <button class="btn" id="countdownBtn" onclick="startCountdown()">Start Countdown</button>
+                <div class="result" id="countdownResult">Select a target date</div>
             </div>
 
             <!-- 美国节假日 -->
             <div class="tool-card">
-                <h2>🇺🇸 2026年美国节假日</h2>
+                <h2 id="holidaysTitle">🇺🇸 US Holidays 2026</h2>
                 <div class="holiday-list" id="holidayList"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 设置默认日期为今天
-        const today = new Date().toISOString().split('T')[0];
-        document.querySelectorAll('input[type="date"]').forEach(input => {
-            input.value = today;
-        });
+        // 语言包
+        const i18n = {
+            en: {
+                mainTitle: '📅 Day Calculator',
+                mainSubtitle: 'Business Days · Date Difference · Countdown · US Holidays',
+                workDaysTitle: '📅 Business Days Calculator',
+                workDaysStartLabel: 'Start Date',
+                workDaysEndLabel: 'End Date',
+                workDaysBtn: 'Calculate',
+                workDaysResult: 'Select dates to calculate',
+                workDaysError: 'End date must be after start date',
+                workDaysSuccess: 'Business days:',
+                dateDiffTitle: '📆 Date Difference Calculator',
+                dateDiffStartLabel: 'Start Date',
+                dateDiffEndLabel: 'End Date',
+                dateDiffBtn: 'Calculate',
+                dateDiffResult: 'Select dates to calculate',
+                dateDiffSuccess: 'Difference:',
+                countdownTitle: '⏰ Countdown Timer',
+                countdownDateLabel: 'Target Date',
+                countdownNameLabel: 'Event Name (optional)',
+                countdownBtn: 'Start Countdown',
+                countdownResult: 'Select a target date',
+                countdownPassed: 'has passed',
+                countdownAgo: 'ago',
+                countdownArrived: 'Time is here!',
+                holidaysTitle: '🇺🇸 US Holidays 2026',
+                holidaysPast: '(Past)'
+            },
+            zh: {
+                mainTitle: '📅 日历计算器',
+                mainSubtitle: '工作日计算 · 日期差计算 · 倒计时 · 美国节假日',
+                workDaysTitle: '📅 工作日计算器',
+                workDaysStartLabel: '开始日期',
+                workDaysEndLabel: '结束日期',
+                workDaysBtn: '计算',
+                workDaysResult: '选择日期查看结果',
+                workDaysError: '结束日期不能早于开始日期',
+                workDaysSuccess: '工作日：',
+                dateDiffTitle: '📆 日期差计算器',
+                dateDiffStartLabel: '开始日期',
+                dateDiffEndLabel: '结束日期',
+                dateDiffBtn: '计算',
+                dateDiffResult: '选择日期查看结果',
+                dateDiffSuccess: '相差：',
+                countdownTitle: '⏰ 倒计时器',
+                countdownDateLabel: '目标日期',
+                countdownNameLabel: '事件名称（可选）',
+                countdownBtn: '开始倒计时',
+                countdownResult: '选择目标日期',
+                countdownPassed: '已过去',
+                countdownAgo: '天前',
+                countdownArrived: '已到来！',
+                holidaysTitle: '🇺🇸 2026年美国节假日',
+                holidaysPast: '（已过）'
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'en';
+
+        // 设置语言
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = i18n[lang];
+            
+            // 更新按钮状态
+            document.getElementById('langEn').classList.toggle('active', lang === 'en');
+            document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+            
+            // 更新标题
+            document.getElementById('mainTitle').textContent = t.mainTitle;
+            document.getElementById('mainSubtitle').textContent = t.mainSubtitle;
+            
+            // 更新各工具标题和标签
+            document.getElementById('workDaysTitle').textContent = t.workDaysTitle;
+            document.getElementById('workDaysStartLabel').textContent = t.workDaysStartLabel;
+            document.getElementById('workDaysEndLabel').textContent = t.workDaysEndLabel;
+            document.getElementById('workDaysBtn').textContent = t.workDaysBtn;
+            
+            document.getElementById('dateDiffTitle').textContent = t.dateDiffTitle;
+            document.getElementById('dateDiffStartLabel').textContent = t.dateDiffStartLabel;
+            document.getElementById('dateDiffEndLabel').textContent = t.dateDiffEndLabel;
+            document.getElementById('dateDiffBtn').textContent = t.dateDiffBtn;
+            
+            document.getElementById('countdownTitle').textContent = t.countdownTitle;
+            document.getElementById('countdownDateLabel').textContent = t.countdownDateLabel;
+            document.getElementById('countdownNameLabel').textContent = t.countdownNameLabel;
+            document.getElementById('countdownBtn').textContent = t.countdownBtn;
+            
+            document.getElementById('holidaysTitle').textContent = t.holidaysTitle;
+            
+            // 重置结果显示
+            document.getElementById('workDayResult').textContent = t.workDaysResult;
+            document.getElementById('dateDiffResult').textContent = t.dateDiffResult;
+            document.getElementById('countdownResult').textContent = t.countdownResult;
+            
+            // 更新placeholder
+            if (lang === 'en') {
+                document.getElementById('countdownName').placeholder = 'Birthday, Holiday, Anniversary...';
+            } else {
+                document.getElementById('countdownName').placeholder = '生日、假期、纪念日...';
+            }
+            
+            // 重新渲染节假日
+            renderHolidays();
+            
+            // 保存到本地存储
+            localStorage.setItem('dayCalcLang', lang);
+        }
 
         // 计算工作日
         function calculateWorkDays() {
+            const t = i18n[currentLang];
             const startDate = new Date(document.getElementById('workStartDate').value);
             const endDate = new Date(document.getElementById('workEndDate').value);
             
             if (isNaN(startDate) || isNaN(endDate)) {
-                document.getElementById('workDayResult').innerHTML = '请选择有效日期';
+                document.getElementById('workDayResult').textContent = t.workDaysResult;
                 return;
             }
             
             if (endDate < startDate) {
-                document.getElementById('workDayResult').innerHTML = '结束日期不能早于开始日期';
+                document.getElementById('workDayResult').textContent = t.workDaysError;
                 return;
             }
             
@@ -228,16 +361,17 @@
             }
             
             document.getElementById('workDayResult').innerHTML = 
-                `工作日：<strong>${workDays}</strong> 天`;
+                `${t.workDaysSuccess}<strong>${workDays}</strong> ${currentLang === 'en' ? 'days' : '天'}`;
         }
 
         // 计算日期差
         function calculateDateDiff() {
+            const t = i18n[currentLang];
             const startDate = new Date(document.getElementById('diffStartDate').value);
             const endDate = new Date(document.getElementById('diffEndDate').value);
             
             if (isNaN(startDate) || isNaN(endDate)) {
-                document.getElementById('dateDiffResult').innerHTML = '请选择有效日期';
+                document.getElementById('dateDiffResult').textContent = t.dateDiffResult;
                 return;
             }
             
@@ -245,59 +379,58 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
             document.getElementById('dateDiffResult').innerHTML = 
-                `相差：<strong>${diffDays}</strong> 天`;
+                `${t.dateDiffSuccess}<strong>${diffDays}</strong> ${currentLang === 'en' ? 'days' : '天'}`;
         }
 
         // 倒计时
+        let countdownInterval;
         function startCountdown() {
+            const t = i18n[currentLang];
             const targetDate = new Date(document.getElementById('countdownDate').value);
-            const eventName = document.getElementById('countdownName').value || '那一天';
+            const eventName = document.getElementById('countdownName').value || (currentLang === 'en' ? 'that day' : '那一天');
             
             if (isNaN(targetDate)) {
-                document.getElementById('countdownResult').innerHTML = '请选择目标日期';
+                document.getElementById('countdownResult').textContent = t.countdownResult;
                 return;
             }
             
-            const now = new Date();
-            const diff = targetDate - now;
+            // 清除之前的interval
+            if (countdownInterval) clearInterval(countdownInterval);
             
-            if (diff < 0) {
-                document.getElementById('countdownResult').innerHTML = 
-                    `<strong>已过去</strong><br>距离 ${eventName} 已过去 ${Math.abs(Math.floor(diff / (1000 * 60 * 60 * 24)))} 天`;
-                return;
-            }
-            
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('countdownResult').innerHTML = 
-                `距离 <strong>${eventName}</strong><br>${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`;
-            
-            // 每秒更新
-            setInterval(() => {
+            const updateCountdown = () => {
                 const now = new Date();
                 const diff = targetDate - now;
+                
                 if (diff < 0) {
+                    const days = Math.abs(Math.floor(diff / (1000 * 60 * 60 * 24)));
                     document.getElementById('countdownResult').innerHTML = 
-                        `<strong>已到达！</strong><br>${eventName} 已到来！`;
+                        `<strong>${t.countdownPassed}</strong><br>${eventName} ${days} ${t.countdownAgo}`;
                     return;
                 }
+                
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                const dayText = currentLang === 'en' ? 'days' : '天';
+                const hourText = currentLang === 'en' ? 'hrs' : '时';
+                const minText = currentLang === 'en' ? 'min' : '分';
+                const secText = currentLang === 'en' ? 'sec' : '秒';
+                
                 document.getElementById('countdownResult').innerHTML = 
-                    `距离 <strong>${eventName}</strong><br>${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`;
-            }, 1000);
+                    `→ <strong>${eventName}</strong><br>${days} ${dayText} ${hours} ${hourText} ${minutes} ${minText} ${seconds} ${secText}`;
+            };
+            
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
         }
 
         // 美国2026年节假日
         const holidays2026 = [
-            { date: '2026-01-01', name: 'New Year\'s Day', nameCn: '元旦' },
+            { date: '2026-01-01', name: "New Year's Day", nameCn: '元旦' },
             { date: '2026-01-19', name: 'Martin Luther King Jr. Day', nameCn: '马丁·路德·金纪念日' },
-            { date: '2026-02-16', name: 'Presidents\' Day', nameCn: '总统日' },
+            { date: '2026-02-16', name: "Presidents' Day", nameCn: '总统日' },
             { date: '2026-05-25', name: 'Memorial Day', nameCn: '阵亡将士纪念日' },
             { date: '2026-06-19', name: 'Juneteenth', nameCn: '六月节' },
             { date: '2026-07-04', name: 'Independence Day', nameCn: '独立日' },
@@ -311,19 +444,46 @@
         function renderHolidays() {
             const container = document.getElementById('holidayList');
             const today = new Date().toISOString().split('T')[0];
+            const t = i18n[currentLang];
             
             container.innerHTML = holidays2026.map(holiday => {
                 const isPast = holiday.date < today;
+                const name = currentLang === 'en' ? holiday.name : holiday.nameCn;
                 return `
                     <div class="holiday-item ${isPast ? 'weekend' : ''}">
-                        <span>${holiday.nameCn}</span>
+                        <span>${name} ${isPast ? t.holidaysPast : ''}</span>
                         <span class="holiday-date">${holiday.date}</span>
                     </div>
                 `;
             }).join('');
         }
 
-        renderHolidays();
+        // 初始化
+        function init() {
+            // 设置默认日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                input.value = today;
+            });
+            
+            // 检测浏览器语言
+            const browserLang = navigator.language || navigator.userLanguage;
+            let lang = 'en';
+            if (browserLang.toLowerCase().startsWith('zh')) {
+                lang = 'zh';
+            }
+            
+            // 优先使用本地存储的语言设置
+            const savedLang = localStorage.getItem('dayCalcLang');
+            if (savedLang) {
+                lang = savedLang;
+            }
+            
+            // 设置语言
+            setLanguage(lang);
+        }
+
+        init();
     </script>
 </body>
 </html>
