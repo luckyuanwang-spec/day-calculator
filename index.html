@@ -155,6 +155,47 @@
                 padding: 16px;
             }
         }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .faq-section h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .faq-item {
+            margin-bottom: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 16px;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .faq-answer {
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 <body>
@@ -220,11 +261,135 @@
                 <div class="holiday-list" id="holidayList"></div>
             </div>
         </div>
+
+        <div class="faq-section">
+            <h2 id="faqTitle">❓ Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" id="faq1Q">What is a Business Day?</div>
+                <div class="faq-answer" id="faq1A">A business day is any day from Monday to Friday, excluding weekends (Saturday and Sunday). Our calculator automatically excludes weekends when counting business days.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" id="faq2Q">How is the Date Difference calculated?</div>
+                <div class="faq-answer" id="faq2A">Date difference is calculated as the absolute number of calendar days between the start and end dates, inclusive of the start date. For example, Jan 1 to Jan 3 is 3 days.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" id="faq3Q">How does the Countdown Timer work?</div>
+                <div class="faq-answer" id="faq3A">Select a target date, optionally name the event (e.g., "My Birthday"), and click Start Countdown. The timer updates every second and shows days, hours, minutes, and seconds remaining.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" id="faq4Q">Are US Holidays included in Business Days?</div>
+                <div class="faq-answer" id="faq4A">No. The Business Days calculator only excludes weekends (Sat/Sun). US federal holidays are shown separately for reference but are NOT automatically excluded from the business day count.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" id="faq5Q">Can I use this tool on mobile?</div>
+                <div class="faq-answer" id="faq5A">Yes! This tool is fully responsive and works on all devices — mobile, tablet, and desktop. No app download needed.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" id="faq6Q">Does the Countdown work for past dates?</div>
+                <div class="faq-answer" id="faq6A">Yes. If the target date is in the past, the countdown will show how many days have passed since that date, so you can use it as a "days since" calculator too!</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" id="faq7Q">Is my data saved or sent to a server?</div>
+                <div class="faq-answer" id="faq7A">No. All calculations happen entirely in your browser. No data is saved or sent anywhere. Your privacy is fully protected.</div>
+            </div>
+        </div>
     </div>
 
     <script>
         // 语言包
         const i18n = {
+            en: {
+                mainTitle: '📅 Day Calculator',
+                mainSubtitle: 'Business Days · Date Difference · Countdown · US Holidays',
+                workDaysTitle: '📅 Business Days Calculator',
+                workDaysStartLabel: 'Start Date',
+                workDaysEndLabel: 'End Date',
+                workDaysBtn: 'Calculate',
+                workDaysResult: 'Select dates to calculate',
+                workDaysError: 'End date must be after start date',
+                workDaysSuccess: 'Business days:',
+                dateDiffTitle: '📆 Date Difference Calculator',
+                dateDiffStartLabel: 'Start Date',
+                dateDiffEndLabel: 'End Date',
+                dateDiffBtn: 'Calculate',
+                dateDiffResult: 'Select dates to calculate',
+                dateDiffSuccess: 'Difference:',
+                countdownTitle: '⏰ Countdown Timer',
+                countdownDateLabel: 'Target Date',
+                countdownNameLabel: 'Event Name (optional)',
+                countdownBtn: 'Start Countdown',
+                countdownResult: 'Select a target date',
+                countdownPassed: 'has passed',
+                countdownAgo: 'ago',
+                countdownArrived: 'Time is here!',
+                holidaysTitle: '🇺🇸 US Holidays 2026',
+                holidaysPast: '(Past)',
+                faqTitle: '❓ Frequently Asked Questions',
+                faq1Q: 'What is a Business Day?',
+                faq1A: 'A business day is any day from Monday to Friday, excluding weekends (Saturday and Sunday). Our calculator automatically excludes weekends when counting business days.',
+                faq2Q: 'How is the Date Difference calculated?',
+                faq2A: 'Date difference is calculated as the absolute number of calendar days between the start and end dates, inclusive of the start date. For example, Jan 1 to Jan 3 is 3 days.',
+                faq3Q: 'How does the Countdown Timer work?',
+                faq3A: 'Select a target date, optionally name the event (e.g., "My Birthday"), and click Start Countdown. The timer updates every second and shows days, hours, minutes, and seconds remaining.',
+                faq4Q: 'Are US Holidays included in Business Days?',
+                faq4A: 'No. The Business Days calculator only excludes weekends (Sat/Sun). US federal holidays are shown separately for reference but are NOT automatically excluded from the business day count.',
+                faq5Q: 'Can I use this tool on mobile?',
+                faq5A: 'Yes! This tool is fully responsive and works on all devices — mobile, tablet, and desktop. No app download needed.',
+                faq6Q: 'Does the Countdown work for past dates?',
+                faq6A: 'Yes. If the target date is in the past, the countdown will show how many days have passed since that date, so you can use it as a "days since" calculator too!',
+                faq7Q: 'Is my data saved or sent to a server?',
+                faq7A: 'No. All calculations happen entirely in your browser. No data is saved or sent anywhere. Your privacy is fully protected.'
+            },
+            zh: {
+                mainTitle: '📅 日历计算器',
+                mainSubtitle: '工作日计算 · 日期差计算 · 倒计时 · 美国节假日',
+                workDaysTitle: '📅 工作日计算器',
+                workDaysStartLabel: '开始日期',
+                workDaysEndLabel: '结束日期',
+                workDaysBtn: '计算',
+                workDaysResult: '选择日期查看结果',
+                workDaysError: '结束日期不能早于开始日期',
+                workDaysSuccess: '工作日：',
+                dateDiffTitle: '📆 日期差计算器',
+                dateDiffStartLabel: '开始日期',
+                dateDiffEndLabel: '结束日期',
+                dateDiffBtn: '计算',
+                dateDiffResult: '选择日期查看结果',
+                dateDiffSuccess: '相差：',
+                countdownTitle: '⏰ 倒计时器',
+                countdownDateLabel: '目标日期',
+                countdownNameLabel: '事件名称（可选）',
+                countdownBtn: '开始倒计时',
+                countdownResult: '选择目标日期',
+                countdownPassed: '已过去',
+                countdownAgo: '天前',
+                countdownArrived: '已到来！',
+                holidaysTitle: '🇺🇸 2026年美国节假日',
+                holidaysPast: '（已过）',
+                faqTitle: '❓ 常见问题',
+                faq1Q: '什么是工作日？',
+                faq1A: '工作日是指周一至周五的任何一天，不包括周末（周六和周日）。我们的计算器在统计工作日时会自动排除周末。',
+                faq2Q: '日期差是如何计算的？',
+                faq2A: '日期差计算的是开始日期和结束日期之间的自然日天数，包含开始日期。例如，1月1日到1月3日是3天。',
+                faq3Q: '倒计时器如何工作？',
+                faq3A: '选择目标日期，可选输入事件名称（例如"我的生日"），然后点击开始倒计时。计时器每秒更新一次，显示剩余的天数、小时、分钟和秒数。',
+                faq4Q: '美国节假日包含在工作日中吗？',
+                faq4A: '不包含。工作日计算器只排除周末（周六/周日）。美国联邦节假日单独列出供参考，但不会自动从工作日统计中排除。',
+                faq5Q: '可以在手机上使用这个工具吗？',
+                faq5A: '可以！这个工具完全自适应，适用于所有设备——手机、平板和电脑。无需下载应用。',
+                faq6Q: '倒计时支持过去的日期吗？',
+                faq6A: '支持。如果目标日期在过去，倒计时将显示自那天起已经过去了多少天，所以您也可以把它当作"已过去多少天"的计算器！',
+                faq7Q: '我的数据会被保存或发送到服务器吗？',
+                faq7A: '不会。所有计算都完全在您的浏览器中进行。不会保存或发送任何数据到任何地方。您的隐私得到充分保护。'
+            }
+        };
             en: {
                 mainTitle: '📅 Day Calculator',
                 mainSubtitle: 'Business Days · Date Difference · Countdown · US Holidays',
@@ -329,7 +494,24 @@
             
             // 重新渲染节假日
             renderHolidays();
-            
+
+            // 更新FAQ
+            document.getElementById('faqTitle').textContent = t.faqTitle;
+            document.getElementById('faq1Q').textContent = t.faq1Q;
+            document.getElementById('faq1A').textContent = t.faq1A;
+            document.getElementById('faq2Q').textContent = t.faq2Q;
+            document.getElementById('faq2A').textContent = t.faq2A;
+            document.getElementById('faq3Q').textContent = t.faq3Q;
+            document.getElementById('faq3A').textContent = t.faq3A;
+            document.getElementById('faq4Q').textContent = t.faq4Q;
+            document.getElementById('faq4A').textContent = t.faq4A;
+            document.getElementById('faq5Q').textContent = t.faq5Q;
+            document.getElementById('faq5A').textContent = t.faq5A;
+            document.getElementById('faq6Q').textContent = t.faq6Q;
+            document.getElementById('faq6A').textContent = t.faq6A;
+            document.getElementById('faq7Q').textContent = t.faq7Q;
+            document.getElementById('faq7A').textContent = t.faq7A;
+
             // 保存到本地存储
             localStorage.setItem('dayCalcLang', lang);
         }
